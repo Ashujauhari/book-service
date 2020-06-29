@@ -1,0 +1,30 @@
+version: "3.6"
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysqldb
+    ports: 
+      - 3300:3300
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=root
+      - MYSQL_DATABASE=books_database
+    networks: 
+      - book-network
+    volumes:
+      - ./mysqldb:/var/lib/mysql
+      - ./dbscripts:/docker-entrypoint-initdb.d
+        
+  book-service:
+      image: book-service
+      build: ./book-service
+      container_name: book-service
+      ports: 
+        - 8090:8090
+      depends_on: 
+        - db
+      networks: 
+        - book-network
+networks:
+  book-network:
+    name: book-network
